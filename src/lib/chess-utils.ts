@@ -36,6 +36,16 @@ export const PIECE_UNICODE: Record<Color, Record<PieceSymbol, string>> = {
   b: { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' },
 };
 
+// cburnett piece images from lichess CDN
+const PIECE_NAMES: Record<PieceSymbol, string> = {
+  k: 'K', q: 'Q', r: 'R', b: 'B', n: 'N', p: 'P',
+};
+
+export function getPieceImageUrl(color: Color, piece: PieceSymbol): string {
+  const colorPrefix = color === 'w' ? 'w' : 'b';
+  return `https://assets.lichess.org/assets/piece/cburnett/${colorPrefix}${PIECE_NAMES[piece]}.svg`;
+}
+
 export function squareColor(square: Square): 'light' | 'dark' {
   const file = square.charCodeAt(0) - 97;
   const rank = parseInt(square[1]) - 1;
