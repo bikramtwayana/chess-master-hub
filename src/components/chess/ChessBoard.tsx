@@ -1,5 +1,5 @@
 import { Chess, Square } from 'chess.js';
-import { PIECE_UNICODE, squareColor } from '@/lib/chess-utils';
+import { getPieceImageUrl, squareColor } from '@/lib/chess-utils';
 import { GameState } from '@/hooks/useChessGame';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
@@ -86,22 +86,17 @@ export default function ChessBoard({ state, onSquareClick, flipped }: Props) {
                   <div className="absolute inset-0 rounded-none border-[3px] border-board-possible/60" />
                 )}
 
-                {/* Piece */}
+                {/* Piece - cburnett SVG images */}
                 {piece && (
-                  <span
+                  <img
+                    src={getPieceImageUrl(piece.color, piece.type)}
+                    alt={`${piece.color === 'w' ? 'White' : 'Black'} ${piece.type}`}
+                    draggable={false}
                     className={cn(
-                      'chess-piece text-[clamp(1.8rem,5vw,3.2rem)] leading-none',
+                      'w-[80%] h-[80%] select-none pointer-events-none drop-shadow-md',
                       isSelected && 'animate-piece-place'
                     )}
-                    style={{
-                      textShadow:
-                        piece.color === 'w'
-                          ? '0 1px 3px rgba(0,0,0,0.4)'
-                          : '0 1px 2px rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    {PIECE_UNICODE[piece.color][piece.type]}
-                  </span>
+                  />
                 )}
               </button>
             );
