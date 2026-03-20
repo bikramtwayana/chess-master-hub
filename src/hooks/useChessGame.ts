@@ -110,6 +110,14 @@ export function useChessGame({ mode, playerColor, computerLevel, timeControl }: 
   }, [gameStarted, state.isGameOver, state.turn]);
 
   // Computer move
+  // Auto-start game when player is black (computer moves first)
+  useEffect(() => {
+    if (mode === 'computer' && playerColor === 'b' && !gameStarted && stockfishReady) {
+      setGameStarted(true);
+    }
+  }, [mode, playerColor, gameStarted, stockfishReady]);
+
+  // Computer move
   useEffect(() => {
     if (mode !== 'computer') return;
     if (state.isGameOver) return;

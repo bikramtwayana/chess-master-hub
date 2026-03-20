@@ -1,5 +1,4 @@
-import { PIECE_UNICODE } from '@/lib/chess-utils';
-import { formatTime } from '@/lib/chess-utils';
+import { getPieceImageUrl, formatTime } from '@/lib/chess-utils';
 import { cn } from '@/lib/utils';
 import type { PieceSymbol } from 'chess.js';
 
@@ -32,21 +31,28 @@ export default function PlayerInfo({ name, color, time, isActive, captured }: Pr
       <div className="flex items-center gap-3">
         <div
           className={cn(
-            'w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold',
+            'w-8 h-8 rounded-full border-2 flex items-center justify-center overflow-hidden',
             color === 'w'
-              ? 'bg-foreground/90 text-background border-foreground/20'
-              : 'bg-background border-foreground/30 text-foreground'
+              ? 'bg-foreground/90 border-foreground/20'
+              : 'bg-background border-foreground/30'
           )}
         >
-          {color === 'w' ? '♔' : '♚'}
+          <img
+            src={getPieceImageUrl(color, 'k')}
+            alt={color === 'w' ? 'White' : 'Black'}
+            className="w-6 h-6"
+          />
         </div>
         <div>
           <p className="font-medium text-sm">{name}</p>
-          <div className="flex gap-0 text-base leading-none mt-0.5 opacity-80">
+          <div className="flex gap-0 leading-none mt-0.5 opacity-80">
             {sortedCaptured.map((p, i) => (
-              <span key={i} className="-mr-0.5">
-                {PIECE_UNICODE[capturedColor][p as PieceSymbol]}
-              </span>
+              <img
+                key={i}
+                src={getPieceImageUrl(capturedColor, p as PieceSymbol)}
+                alt={p}
+                className="w-4 h-4 -mr-0.5"
+              />
             ))}
           </div>
         </div>
