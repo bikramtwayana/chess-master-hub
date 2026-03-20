@@ -1,7 +1,8 @@
-import { Square } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 import { PIECE_UNICODE, squareColor } from '@/lib/chess-utils';
 import { GameState } from '@/hooks/useChessGame';
 import { cn } from '@/lib/utils';
+import { useMemo } from 'react';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
