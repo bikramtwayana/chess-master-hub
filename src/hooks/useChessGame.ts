@@ -109,7 +109,6 @@ export function useChessGame({ mode, playerColor, computerLevel, timeControl }: 
     };
   }, [gameStarted, state.isGameOver, state.turn]);
 
-  // Computer move
   // Auto-start game when player is black (computer moves first)
   useEffect(() => {
     if (mode === 'computer' && playerColor === 'b' && !gameStarted && stockfishReady) {
@@ -125,6 +124,8 @@ export function useChessGame({ mode, playerColor, computerLevel, timeControl }: 
     if (!stockfishReady) return;
     if (!gameStarted) return;
 
+    const computerColor = state.turn; // capture before async
+
     const timeout = setTimeout(() => {
       getStockfishMove(state.fen, (uciMove) => {
         const game = gameRef.current;
@@ -139,18 +140,20 @@ export function useChessGame({ mode, playerColor, computerLevel, timeControl }: 
             possibleMoves: [],
             lastMove: { from, to },
           });
-          // Add increment for computer
-          setState((prev) => ({
-            ...prev,
-            ...(state.turn === 'w'
-              ? { whiteTime: prev.whiteTime + timeControl.incrementInSeconds }
-              : { blackTime: prev.blackTime + timeControl.incrementInSeconds }),
-          }));
+          // Add increment for computer using captured color
+          if (timeControl.incrementInSeconds > 0) {
+            setState((prev) => ({
+              ...prev,
+              ...(computerColor === 'w'
+                ? { whiteTime: prev.whiteTime + timeControl.incrementInSeconds }
+                : { blackTime: prev.blackTime + timeControl.incrementInSeconds }),
+            }));
+          }
         } catch {
           // Invalid move from engine, ignore
         }
       });
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [mode, state.turn, state.fen, state.isGameOver, playerColor, stockfishReady, gameStarted, getStockfishMove, syncState, timeControl.incrementInSeconds]);
@@ -166,7 +169,7 @@ export function useChessGame({ mode, playerColor, computerLevel, timeControl }: 
       const validMove = state.possibleMoves.includes(square);
       if (validMove) {
         try {
-          // Check for promotion
+          const movingColor = state.turn; // capture before move
           const piece = game.get(state.selectedSquare);
           const isPromotion =
             piece?.type === 'p' &&
@@ -181,22 +184,24 @@ export function useChessGame({ mode, playerColor, computerLevel, timeControl }: 
 
           if (!gameStarted) setGameStarted(true);
 
-          // Add increment
-          setState((prev) => ({
-            ...prev,
-            ...(state.turn === 'w'
-              ? { whiteTime: prev.whiteTime + timeControl.incrementInSeconds }
-              : { blackTime: prev.blackTime + timeControl.incrementInSeconds }),
-          }));
-
           syncState({
             selectedSquare: null,
             possibleMoves: [],
             lastMove: { from: state.selectedSquare, to: square },
           });
+
+          // Add increment using captured color
+          if (timeControl.incrementInSeconds > 0) {
+            setState((prev) => ({
+              ...prev,
+              ...(movingColor === 'w'
+                ? { whiteTime: prev.whiteTime + timeControl.incrementInSeconds }
+                : { blackTime: prev.blackTime + timeControl.incrementInSeconds }),
+            }));
+          }
           return;
         } catch {
-          // Invalid move
+          // Invalid move, fall through to reselect
         }
       }
     }

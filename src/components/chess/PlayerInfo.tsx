@@ -1,4 +1,4 @@
-import { getPieceImageUrl, formatTime } from '@/lib/chess-utils';
+import { PIECE_UNICODE, formatTime } from '@/lib/chess-utils';
 import { cn } from '@/lib/utils';
 import type { PieceSymbol } from 'chess.js';
 
@@ -17,6 +17,7 @@ export default function PlayerInfo({ name, color, time, isActive, captured }: Pr
     (a, b) => PIECE_ORDER.indexOf(a as PieceSymbol) - PIECE_ORDER.indexOf(b as PieceSymbol)
   );
 
+  // Captured pieces are shown in the color of the opponent (pieces this player took)
   const capturedColor = color === 'w' ? 'b' : 'w';
 
   return (
@@ -31,28 +32,27 @@ export default function PlayerInfo({ name, color, time, isActive, captured }: Pr
       <div className="flex items-center gap-3">
         <div
           className={cn(
-            'w-8 h-8 rounded-full border-2 flex items-center justify-center overflow-hidden',
+            'w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm',
             color === 'w'
-              ? 'bg-foreground/90 border-foreground/20'
-              : 'bg-background border-foreground/30'
+              ? 'bg-white border-neutral-300 text-black'
+              : 'bg-neutral-800 border-neutral-600 text-white'
           )}
         >
-          <img
-            src={getPieceImageUrl(color, 'k')}
-            alt={color === 'w' ? 'White' : 'Black'}
-            className="w-6 h-6"
-          />
+          {color === 'w' ? '♔' : '♚'}
         </div>
         <div>
           <p className="font-medium text-sm">{name}</p>
-          <div className="flex gap-0 leading-none mt-0.5 opacity-80">
+          <div className="flex gap-0 text-base leading-none mt-0.5 opacity-80">
             {sortedCaptured.map((p, i) => (
-              <img
+              <span
                 key={i}
-                src={getPieceImageUrl(capturedColor, p as PieceSymbol)}
-                alt={p}
-                className="w-4 h-4 -mr-0.5"
-              />
+                className={cn(
+                  '-mr-0.5',
+                  capturedColor === 'w' ? 'chess-piece-white' : 'chess-piece-black'
+                )}
+              >
+                {PIECE_UNICODE[capturedColor][p as PieceSymbol]}
+              </span>
             ))}
           </div>
         </div>
