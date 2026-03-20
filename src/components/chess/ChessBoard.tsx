@@ -14,8 +14,7 @@ type Props = {
 };
 
 export default function ChessBoard({ state, onSquareClick, flipped }: Props) {
-  const { Chess } = require('chess.js');
-  const game = new Chess(state.fen);
+  const game = useMemo(() => new Chess(state.fen), [state.fen]);
 
   const files = flipped ? [...FILES].reverse() : FILES;
   const ranks = flipped ? [...RANKS].reverse() : RANKS;
