@@ -1,29 +1,41 @@
 import { useState } from 'react';
-import GameSetup from '@/components/chess/GameSetup';
+import Home from '@/components/chess/Home';
+import TimeSelection from '@/components/chess/TimeSelection';
 import Game from '@/pages/Game';
 import { GameMode, ComputerLevel, TimeControl } from '@/lib/chess-utils';
 
-type GameConfig = {
-  mode: GameMode;
-  playerColor: 'w' | 'b';
-  computerLevel: ComputerLevel;
-  timeControl: TimeControl;
-};
+type Screen = 'home' | 'time-select' | 'game';
 
 export default function Index() {
-  const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
+  const [screen, setScreen] = useState<Screen>('home');
+  const [mode, setMode] = useState<GameMode>('friend');
+  const [timeControl, setTimeControl] = useState<TimeControl | null>(null);
 
-  if (gameConfig) {
+  const handleModeSelect = (selectedMode: GameMode) => {
+    setMode(selectedMode);
+    setScreen('time-select');
+  };
+
+  const handleTimeSelect = (tc: TimeControl) => {
+    setTimeControl(tc);
+    setScreen('game');
+  };
+
+  if (screen === 'game' && timeControl) {
     return (
       <Game
-        mode={gameConfig.mode}
-        playerColor={gameConfig.playerColor}
-        computerLevel={gameConfig.computerLevel}
-        timeControl={gameConfig.timeControl}
-        onBack={() => setGameConfig(null)}
+        mode={mode}
+        playerColor="w"
+        computerLevel={3}
+        timeControl={timeControl}
+        onBack={() => setScreen('home')}
       />
     );
   }
 
-  return <GameSetup onStart={setGameConfig} />;
+  if (screen === 'time-select') {
+    return <TimeSelection onSelect={handleTimeSelect} onBack={() => setScreen('home')} />;
+  }
+
+  return <Home onSelectMode={handleModeSelect} />;
 }
